@@ -1,0 +1,20 @@
+[
+  {
+    "paper_copy": "qsp_paper/evidence/exact_reflection_results.json",
+    "source_path_in_review_package": "vendor/cycle12/vendor/cycle11/RESULTS.json",
+    "source_package": "QSP-CYCLE13-REVIEW.zip",
+    "sha256": "e8cf0e86d7c63b16a90c9bc612a2131f1b532d653d49a9c3c8648f32da034bbb"
+  },
+  {
+    "paper_copy": "qsp_paper/evidence/finite_error_results.json",
+    "source_path_in_review_package": "vendor/cycle12/RESULTS.json",
+    "source_package": "QSP-CYCLE13-REVIEW.zip",
+    "sha256": "eeb550d32f9d2a528d374dac95d4d70675c8ad2c37b4b349502061531e838344"
+  },
+  {
+    "paper_copy": "qsp_paper/evidence/target_error_results.json",
+    "source_path_in_review_package": "RESULTS.json",
+    "source_package": "QSP-CYCLE13-REVIEW.zip",
+    "sha256": "95d312a7284b6de274699ffd81274f47a32b32ee4e76b69dd7ec5d86406fc312"
+  }
+]

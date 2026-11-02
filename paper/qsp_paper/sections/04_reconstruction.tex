@@ -1,0 +1,94 @@
+\section{Output Reconstruction and Uniform Bounds for Small Support}\label{sec:small}
+Using Corollary~\ref{cor:envelope} alone gives an unnecessarily coarse gate bound when $d\ll n$. After projecting the support, we use two complementary reconstructions to prove~\eqref{eq:mainupper} throughout $d\le n$.
+
+\subsection{Rectangular expansion with initially zero targets}
+\begin{lemma}[Broadcast to arbitrary initial targets]\label{lem:fanout}
+A bit $y$ can be XORed into $f$ targets using $O(f)$ CNOTs and $O(\log(f+1))$ depth, without additional wires. The targets need not initially be zero.
+\end{lemma}
+\begin{proof}
+Choose an invertible CNOT tree $G$ on the target register such that $Ge_{\mathrm{root}}=\mathbf1$. The chronological sequence $G^{-1};\CX_{y\to\mathrm{root}};G$ maps the target $t$ to
+$G(G^{-1}t+ye_{\mathrm{root}})=t+y\mathbf1$. It uses $2f-1$ gates and depth at most $2\ceil{\log_2 f}+1$. For $f=0$, no operation is performed. This is also an established fanout component\cite[Lemma~3]{luo2025}.
+\end{proof}
+
+\begin{lemma}[Rectangular expansion on zero targets]\label{lem:rectangular}
+Let $E\in\F^{n\times r}$ have $I_r$ as its first $r$ rows. The map $\ket y\ket{0^{n-r}}\mapsto\ket{Ey}$ can be implemented on $n$ wires with
+\begin{equation}\label{eq:rectresources}
+D_E=O\left(L(n)+\frac r{L(r)}\right),\qquad
+G_E=O\left(n+\frac{nr}{L(r)}\right).
+\end{equation}
+\end{lemma}
+\begin{proof}
+For $r=1$, apply Lemma~\ref{lem:fanout} directly. For $r\ge2$, partition the remaining register into full $r$-wire blocks and a remainder of fewer than $r$ wires. Every binary square matrix $M$ of dimension at least two is the sum $P+Q$ of two invertible matrices. To make this step directly checkable, use invertible left and right elimination to reduce $M$ to $J=\diag(I_k,0)$, and construct $P_0$ blockwise: use $[1]$ for a zero coordinate; $\bigl(\begin{smallmatrix}0&1\\1&1\end{smallmatrix}\bigr)$ for two one coordinates; and $\bigl(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\bigr)$ for a one paired with a zero. For full rank in odd dimension, first use a three-dimensional companion matrix with characteristic polynomial $t^3+t+1$, then pair the remaining one coordinates. Both $P_0$ and $P_0+J$ are invertible on every block. Undoing the left and right elimination yields $P,Q$. The one-dimensional full-rank exception has already been handled separately.
+
+For the coefficient matrix $M_j=P_j+Q_j$ of full block $j$, start with zero targets and successively broadcast $y$, apply $Q_j^{-1}P_j$, broadcast $y$ again, and apply $Q_j$. The result is
+\[
+Q_j(Q_j^{-1}P_jy+y)=M_jy.
+\]
+The linear transformations on distinct full blocks are disjoint and can be synthesized in parallel using Established result~\ref{fact:linear}. Both broadcasts are grouped by source coordinate, with disjoint groups. The second broadcast requires the arbitrary-target semantics of Lemma~\ref{lem:fanout}. The remainder and source occupy fewer than $2r$ wires and are handled by the invertible shear $(y,t)\mapsto(y,t+M_{\mathrm{tail}}y)$. Combining the parallel block costs gives~\eqref{eq:rectresources}.
+\end{proof}
+On a full block with nonzero initial contents $t$, these four stages generally output $P_jt+M_jy$, not $t+M_jy$. Lemma~\ref{lem:rectangular} is therefore used only under its zero-target promise, although its gate sequence remains reversible on the entire space.
+
+\subsection{Recoverable dirty workspace and two-batch reconstruction}
+\begin{lemma}[Cancellation of linear dirty-workspace contributions]\label{lem:echo}
+Let the source $y$, target $t$, and workspace $w$ be disjoint. Suppose a CNOT circuit $C$ does not touch $t$, and no source wire is ever the target of a gate. Then
+\[
+C:(y,w)\mapsto(y,Rw+Py),\qquad R\text{ is invertible}.
+\]
+Deleting gates directly controlled by source wires gives $C_0:w\mapsto Rw$. Let $F:t\mapsto t+Aw$ write only from workspace to targets. The chronological sequence
+\begin{equation}\label{eq:echo}
+C;F;C^{-1};C_0;F;C_0^{-1}
+\end{equation}
+implements $(y,t,w)\mapsto(y,t+APy,w)$ exactly.
+\end{lemma}
+\begin{proof}
+The first three stages add $ARw+APy$ to $t$ and restore $w$. The last three add $ARw$ again and restore $w$ again. Binary addition cancels the dirty contribution. The identity holds on every basis input without phases and hence preserves arbitrary entanglement with a reference system.
+\end{proof}
+The condition that source wires are never targets cannot be weakened to restoration of the source only at the end. Nor does deleting source-controlled gates establish the same rule for a general nonlinear circuit.
+
+\begin{lemma}[Two-batch reconstruction with sufficient output space]\label{lem:wide}
+If $n\ge64d^2$ and $1\le r\le d-1$, every $E$ as in Lemma~\ref{lem:rectangular} admits a full shear $(y,t)\mapsto(y,t+My)$ on $n$ wires, where $M$ comprises the remaining rows of $E$, with
+\begin{equation}\label{eq:wide}
+D_E=O\left(L(n)+\frac r{L(n)}\right),\qquad
+G_E=O\left(n+\frac{nr}{L(n)}\right).
+\end{equation}
+\end{lemma}
+\begin{proof}
+Let $k=\min\{r,\max(1,\floor{(\log_2n)/4})\}$ and $g=\ceil{r/k}$, and partition the source into groups of at most $k$ bits. For a batch of $q$ targets, each target requires at most one nonzero parity feature from each source group. Allocate private leaves to every feature and reduce them using balanced XOR trees. The leaf count for all possible features satisfies
+\[
+\ell\le\sum_{\text{groups}}s2^{s-1}\le r2^{k-1}.
+\]
+If a feature has $u$ consumers, impose a load bound $B=4g$ and allocate $\ceil{u/B}$ source nodes, including its existing root; generate the additional copies with a CNOT tree. The total number of extra nodes is
+\[
+c=\sum_f\bigl(\ceil{u_f/B}-1\bigr)\le\frac{\sum_fu_f}{4g}\le q/4.
+\]
+Represent the writing CNOTs as edges of a bipartite graph between source copies and targets. Its maximum degree is at most $B$, so greedy edge coloring needs at most $2B-1$ colors; each color class is a legal disjoint-wire layer. Writing takes $O(g)$ depth and at most $qg$ gates. Source-to-leaf copying, feature reduction, and load-distributing copies each require logarithmic depth and together use $O(\ell+c)$ gates. On zero workspace, this circuit computes the required features; on arbitrary workspace it has the form $Rw+Py$. Lemma~\ref{lem:echo} converts it into the full shear.
+
+Split the $n-r$ targets as evenly as possible into two batches, and borrow the other batch as workspace while processing each one. Since $r<\sqrt n/8$, $n\ge256$, and $2^k\le n^{1/4}$,
+\[
+\ell\le\frac{n^{3/4}}{16}\le\frac n{64},\qquad
+c\le\frac n8,\qquad \ell+c\le\frac{9n}{64}<\frac n3.
+\]
+The complementary batch has at least $\floor{(n-r)/2}\ge7n/16-1/2>n/3$ wires, enough for all leaves and copies. The first batch may already be entangled while the second is computed, but Lemma~\ref{lem:echo} guarantees exact restoration.
+
+If $k=r$, then $g=1$. Otherwise $k\ge(\log_2n)/8$, so $g\le1+8r/\log_2n$. There are only two batches, and summing their costs yields~\eqref{eq:wide}.
+\end{proof}
+
+\subsection{Combining the constructions for \texorpdfstring{$d\le n$}{d <= n}}
+\begin{proposition}\label{prop:small}
+The upper bounds of Theorem~\ref{thm:main} hold for $2\le d\le n$.
+\end{proposition}
+\begin{proof}
+First compute the projection and reconstruction matrix using Lemma~\ref{lem:projection}. If $n<64d^2$, prepare the core on the first $d$ wires by Lemma~\ref{lem:core} and reconstruct with Lemma~\ref{lem:rectangular}. Since $r\le d-1$ and $t/L(t)$ is increasing, the costs are
+\[
+D=O(L(n)+d/L(d)),\qquad G=O(n+nd/L(d)).
+\]
+The inequalities $n+1\le65(d+1)^2$ and $d\ge2$ imply $L(n)<6L(d)$, allowing the denominators to be replaced by $L(n)$ with a uniform constant.
+
+If $n\ge64d^2$, set $a=r$ and $m=6rd$ in Established result~\ref{fact:tradeoff}. Its conditions $m\ge6r$ and $d\le2^r$ hold, and
+\[
+r+m=r(1+6d)<7d^2\le n.
+\]
+All ancillas relative to the compressed core fit within the final output register and return to zero. Substitution into~\eqref{eq:tradeoffdepth}--\eqref{eq:tradeoffsize} gives core depth $O(L(d))$ and gate count $O(d^2)$. Apply Lemma~\ref{lem:wide} to reconstruct. The inequalities $d^2\le n/64$ and $r\le d-1$ give the desired bounds. This step is a valid reparameterization of an established theorem, not a separately claimed new state-preparation core.
+
+Finally restore the output layout and add back $x_0$. Any permutation is a product of two layers of disjoint transpositions. Decomposing every SWAP into three CNOTs gives at most six layers and $O(n)$ gates; translation adds at most one X layer. All output wires are retained, and these costs are included in~\eqref{eq:mainupper}.
+\end{proof}

@@ -1,0 +1,143 @@
+{
+  "source": "User-supplied Overleaf Git repository",
+  "source_revision": "911f5e1e39cf6ada7e2a20676db0e38e38d5b9c3",
+  "imported_on": "2026-11-02",
+  "byte_convention": "Original Git blob bytes (LF), not Windows checkout CRLF",
+  "files": [
+    {
+      "path": "paper/build_qsp.sh",
+      "source_path": "build_qsp.sh",
+      "sha256": "3e88b2e30d26900413433db3f93428798c5d0dcd31c3d3a6d2a3333ec964e81e"
+    },
+    {
+      "path": "paper/qsp_paper.tex",
+      "source_path": "qsp_paper.tex",
+      "sha256": "b8d9d81f38140ca3fc06e394e5fb171ed9e5e8cb26e5011f6dae25f938dd9fe3"
+    },
+    {
+      "path": "paper/qsp_paper/appendices/a_reflection.tex",
+      "source_path": "qsp_paper/appendices/a_reflection.tex",
+      "sha256": "ffcafff4672e2b6b46cae585b37fde6ff8e558a25681d24d877515abb095c609"
+    },
+    {
+      "path": "paper/qsp_paper/appendices/b_intervals.tex",
+      "source_path": "qsp_paper/appendices/b_intervals.tex",
+      "sha256": "e2c8e3c01f3d901ea3ac480db03eb0a753935a7e2018a32d6e589e8a1001b65a"
+    },
+    {
+      "path": "paper/qsp_paper/appendices/c_scope_and_reproducibility.tex",
+      "source_path": "qsp_paper/appendices/c_scope_and_reproducibility.tex",
+      "sha256": "8ddc962dfa1648f4f02272142d3f0c3acaceddd830011d0a251907c1626bb5e7"
+    },
+    {
+      "path": "paper/qsp_paper/editorial/BUILD_VALIDATION.json",
+      "source_path": "qsp_paper/editorial/BUILD_VALIDATION.json",
+      "sha256": "e50c5aa7abd11d0a315fd59519a546577c99d856473ca0caa9ee48a668972d6e"
+    },
+    {
+      "path": "paper/qsp_paper/editorial/REVIEW_NOTES.md",
+      "source_path": "qsp_paper/editorial/REVIEW_NOTES.md",
+      "sha256": "85581689a44c458de2c7a837e659c4bfda5dfe62e5f82d930af4ff6bba180465"
+    },
+    {
+      "path": "paper/qsp_paper/editorial/SOURCE_AND_EDIT_MAP.md",
+      "source_path": "qsp_paper/editorial/SOURCE_AND_EDIT_MAP.md",
+      "sha256": "bec502d56339c825235e1c798c70f2e55a74b3cc172279989c19d802e9d4bdf2"
+    },
+    {
+      "path": "paper/qsp_paper/evidence/SOURCE_MAP.json",
+      "source_path": "qsp_paper/evidence/SOURCE_MAP.json",
+      "sha256": "f991161bcfa797fb5a39b550da9027cc73e18b152328ccbe640ed06fc515e135"
+    },
+    {
+      "path": "paper/qsp_paper/evidence/exact_reflection_results.json",
+      "source_path": "qsp_paper/evidence/exact_reflection_results.json",
+      "sha256": "e8cf0e86d7c63b16a90c9bc612a2131f1b532d653d49a9c3c8648f32da034bbb"
+    },
+    {
+      "path": "paper/qsp_paper/evidence/finite_error_results.json",
+      "source_path": "qsp_paper/evidence/finite_error_results.json",
+      "sha256": "eeb550d32f9d2a528d374dac95d4d70675c8ad2c37b4b349502061531e838344"
+    },
+    {
+      "path": "paper/qsp_paper/evidence/target_error_results.json",
+      "source_path": "qsp_paper/evidence/target_error_results.json",
+      "sha256": "95d312a7284b6de274699ffd81274f47a32b32ee4e76b69dd7ec5d86406fc312"
+    },
+    {
+      "path": "paper/qsp_paper/generate_tables.py",
+      "source_path": "qsp_paper/generate_tables.py",
+      "sha256": "0d7ddd7c180df7ff0568db7f454a19d835b1b63091c28c8ed44b77befc72caac"
+    },
+    {
+      "path": "paper/qsp_paper/preamble.tex",
+      "source_path": "qsp_paper/preamble.tex",
+      "sha256": "c1cf8debf7bf80ea583db146826d948075db93335490417b952df669e75c05d7"
+    },
+    {
+      "path": "paper/qsp_paper/references.bib",
+      "source_path": "qsp_paper/references.bib",
+      "sha256": "9e235726d5104637fe302625fd60cb4147e726537eea56da29d6c3f962242227"
+    },
+    {
+      "path": "paper/qsp_paper/sections/00_abstract.tex",
+      "source_path": "qsp_paper/sections/00_abstract.tex",
+      "sha256": "e05c2b1747f16e670078ea89e0ce1d8b143e4bee205a5898a83aea0a5ac9dd81"
+    },
+    {
+      "path": "paper/qsp_paper/sections/01_introduction.tex",
+      "source_path": "qsp_paper/sections/01_introduction.tex",
+      "sha256": "0fc807a2ab1602037a1e77136a664ec8d87aec0b53de909fbba698f858422e74"
+    },
+    {
+      "path": "paper/qsp_paper/sections/02_model.tex",
+      "source_path": "qsp_paper/sections/02_model.tex",
+      "sha256": "279338193df1711644921092b9d369a00a1774a1452985ffc0820ad72abcf162"
+    },
+    {
+      "path": "paper/qsp_paper/sections/03_core.tex",
+      "source_path": "qsp_paper/sections/03_core.tex",
+      "sha256": "661aacb282b806e3545502cf4699f6f17763adb1162ef4dbd04aea50e4fb713d"
+    },
+    {
+      "path": "paper/qsp_paper/sections/04_reconstruction.tex",
+      "source_path": "qsp_paper/sections/04_reconstruction.tex",
+      "sha256": "af4f57734c347176c5be6da789127c0c7c6c872b6627ec6394c35ab608cd4fac"
+    },
+    {
+      "path": "paper/qsp_paper/sections/05_lifting.tex",
+      "source_path": "qsp_paper/sections/05_lifting.tex",
+      "sha256": "73455df08a215abd9cc622a06724465f2f487473e8f23e6fab0d8751df71462e"
+    },
+    {
+      "path": "paper/qsp_paper/sections/06_lower_bounds.tex",
+      "source_path": "qsp_paper/sections/06_lower_bounds.tex",
+      "sha256": "98daea7f3f30d8813969366f80d0b03000d624e96e026ccd18462fd7e249c535"
+    },
+    {
+      "path": "paper/qsp_paper/sections/07_error.tex",
+      "source_path": "qsp_paper/sections/07_error.tex",
+      "sha256": "da5251cb7c38bb408931a26c1ea7c4a820138ef413612b4b1360023dce2b41e3"
+    },
+    {
+      "path": "paper/qsp_paper/sections/08_experiments.tex",
+      "source_path": "qsp_paper/sections/08_experiments.tex",
+      "sha256": "e495ef36fde813c0433b2ec22df13c0713c7e697a10e3c2d7a65184276d159b7"
+    },
+    {
+      "path": "paper/qsp_paper/sections/09_conclusion.tex",
+      "source_path": "qsp_paper/sections/09_conclusion.tex",
+      "sha256": "836d6892e3bb0cb488e35a6f9cb6d40fe1b0d164da0c22bb45125fc679d2fc2f"
+    },
+    {
+      "path": "paper/qsp_paper/tables/exact_resources.tex",
+      "source_path": "qsp_paper/tables/exact_resources.tex",
+      "sha256": "195dc780dfe4dc3226397c6177fa3d69730cc4adcd3193f72de2e348e30e0c40"
+    },
+    {
+      "path": "paper/qsp_paper/tables/target_errors.tex",
+      "source_path": "qsp_paper/tables/target_errors.tex",
+      "sha256": "06b245e7a97edc075d493a7dc5e0377a44ce37ac76c0e9e51ab39c75f724c41b"
+    }
+  ]
+}

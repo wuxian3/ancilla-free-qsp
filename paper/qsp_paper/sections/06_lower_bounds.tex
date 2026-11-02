@@ -1,0 +1,42 @@
+\section{Worst-Case Lower Bounds in Fixed Polynomial Windows}\label{sec:lower}
+The gate-count argument follows the established discretization-and-counting method\cite{liluo2025}. We give the proof in the range needed here to make the exact gate model and fixed-polynomial quantifiers explicit, not to claim a new lower-bound technique.
+
+\begin{lemma}[Counting lower bound for gate count]\label{lem:counting}
+For every fixed $c\ge1$, throughout $2\le d\le\min\{n^c,2^n\}$,
+\[
+G^*(n,d)=\Omega_c\left(n+\frac{nd}{L(n)}\right).
+\]
+\end{lemma}
+\begin{proof}
+Consider the equal-positive-amplitude states $\ket{\psi_S}$ on all supports of size exactly $d$. States with different supports have projective vector distance at least $\sqrt{2/d}$. For sufficiently large $n$, fixed $c$ implies $\log_2d\le c\log_2n\le n/2$, and hence
+\[
+\log_2\binom{2^n}{d}\ge d(n-\log_2d)\ge nd/2.
+\]
+Let $T$ be the worst-case minimum gate count for preparing these states. If $T\ge nd$, the desired lower bound follows immediately; otherwise $T<nd$. Regard $U(2)$ as a subset of a bounded eight-dimensional real space and choose an operator-norm net of resolution $\delta=1/(10T\sqrt d)$, taking a unitary representative from each nonempty grid box. Its size is at most $(K/\delta)^8$. Rounding each gate to a representative changes the output by at most $T\delta$, by telescoping the unitary product. Different support states cannot round to the same gate sequence without violating their minimum projective separation.
+
+Pad shorter circuits with identities to length $T$. Counting each gate's type, location, and net representative gives
+\[
+\log_2N_{\mathrm{circuits}}=O\bigl(T(\log n+\log d)\bigr).
+\]
+Comparison with the support count yields $T=\Omega(nd/(\log n+\log d))$. The argument does not restrict the number of arbitrary rotations or treat continuous angles as a finite gate set.
+
+Separately, choose a state with exactly $d$ nonzero amplitudes whose support includes $0^n$ and $1^n$, so no output wire is always zero. Every wire must be touched by a gate, and an elementary gate touches at most two wires; at least $n/2$ gates are required. Taking the larger of the two worst-case lower bounds and using $\log d\le c\log n$ proves the result. Finitely many smaller $n$ can be absorbed into constants depending on fixed $c$.
+\end{proof}
+
+\begin{lemma}[A correlation-based depth lower bound]\label{lem:lightcone}
+For every $2\le d\le2^n$, there is a target with exactly $d$ nonzero terms for which every legal preparation circuit has depth at least $\tfrac12\log_2n$.
+\end{lemma}
+\begin{proof}
+For $d=2$, use the GHZ state. For $d>2$, assign probability $7/16$ to each of $0^n$ and $1^n$, and distribute probability $1/8$ equally among any other $d-2$ distinct points, taking positive square-root amplitudes. All amplitudes are nonzero. For any $i\ne j$,
+\[
+|\E Z_i|\le1/8,\qquad \E(Z_iZ_j)\ge3/4,\qquad
+\Cov(Z_i,Z_j)\ge47/64>0.
+\]
+In a depth-$D$ circuit of gates acting on at most two qubits, an output's backward light cone contains at most $2^D$ initial locations, and any initial location influences at most $2^D$ outputs. On a product input, disjoint backward cones make the expectations of local observables factorize, giving zero covariance. Thus every output cone intersects that of output~1. The at most $2^D$ locations in output~1's backward cone influence at most $4^D$ outputs in total, so $n\le4^D$.
+\end{proof}
+
+\begin{proof}[Completion of the lower bounds in Theorem~\ref{thm:main}]
+A layer contains at most $n$ elementary gates. The hard instances of Lemma~\ref{lem:counting} therefore also require depth $\Omega_c(d/L(n))$. Combining this with Lemma~\ref{lem:lightcone} and using $\max(a,b)\ge(a+b)/2$ gives~\eqref{eq:mainlower}. The gate-count and correlation witnesses need not be the same state.
+\end{proof}
+
+The minimum separation of exact support states shrinks with $d$. Consequently, these exact lower bounds cannot simply be read as optimality results for approximation at a fixed error $\varepsilon$; that problem requires a separate packing-radius analysis. Near $d=2^n$, the upper bounds presented here need not improve on known dense-state preparation algorithms.

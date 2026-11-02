@@ -1,0 +1,39 @@
+\section{Claim Boundaries, Data Provenance, and Reproduction}\label{app:scope}
+\subsection{An encoder gate lower bound is not a state-preparation lower bound}
+Consider the NCT partial one-hot encoding task $x_i\mapsto e_{\pi(i)}$, with support affine rank $r$ and total width at least $d$. Take every wire's evaluation row on the support and adjoin the constant row $\mathbf1$. The initial rank is $r+1$ and the final rank is $d$. X and CNOT preserve this augmented row space, while one Toffoli can increase rank by at most one. At least $d-r-1$ Toffolis are therefore necessary, and the feature core attains that number.
+
+This local count is not an advantage over a fairly normalized baseline: after translation, compression, and addition of a constant feature, an existing successive rank-lifting algorithm attains the same count\cite{vilmart2026}. Nor is it a state-preparation lower bound in the arbitrary-single-qubit-plus-CNOT model. For example, on eight output qubits, the partial encoder for uniform support $\{0,\ldots,7\}$ needs at least four Toffolis, whereas the state itself is prepared with parallel H gates on the first three wires in depth one.
+
+Likewise, the shared-wire load of a fixed CCX set gives only a scheduling lower bound for that set. It does not exclude different pivots, coordinate changes, recoverable copies, or support-dependent rewriting. These restricted comparison propositions are not used in the lower-bound chain for the main theorem.
+
+\subsection{Distinct theoretical and implementation guarantees}
+\begin{table}[htbp]
+\centering\small
+\caption{Claims requiring separate assessment.}\label{tab:claims}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{36mm}Y@{}}
+\toprule
+Object & Guarantee and limitation\\
+\midrule
+Exact uniform upper bounds & All $2\le d\le2^n$; depend on the construction and explicitly cited external results.\\
+Worst-case matching & Only each fixed window $d\le n^c$; not a lower bound for every individual input.\\
+Deterministic linear backend & Actual structural synthesis no longer uses capped random sampling; fastest classical compilation is not claimed.\\
+Exact reflection selection & Protects both depth and gate count at every width; the standalone Fourier backend has quadratic gate count.\\
+Compilation error & Spectral norm relative to a specified source; inverse calls are paired exactly and every execution is charged.\\
+A posteriori target certification & Guarantees accepted explicit inputs; the implemented adapter covers the superlinear batched frontend.\\
+Unestablished claims & External peer review, historical priority, Clifford+$T$ optimality, hardware advantage, and success at every requested precision.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For the branch with sufficient output workspace, the main proof directly invokes the published sparse-state theorem, but that particular core has not been integrated into the code. The implementation instead uses a wide linear-and-monomial construction whose $O(\log^2(d+1))$ core depth is still absorbed by $L(n)+d/L(n)$. The mathematical component and the executed component are thus distinguished explicitly; a literature theorem is not presented as an executed backend.
+
+\subsection{Experimental provenance and reproduction}
+The three groups of implementation evidence concern exact reflection selection, finite compilation error, and complete target certification. The numerical tables are generated from three accompanying JSON summaries. Their source paths and SHA-256 hashes are recorded in \path{qsp_paper/evidence/SOURCE_MAP.json}. Source mappings and review notes under \path{qsp_paper/editorial} are not part of the manuscript compilation, keeping research handoff logs out of the paper's narrative.
+
+The separate research archive \path{QSP-CYCLE13-REVIEW.zip} contains the complete certification replay. Its entry point is
+\begin{quote}\ttfamily\small
+OPENBLAS\_NUM\_THREADS=1 python verify\_cycle13.py
+\end{quote}
+The entry point reads 13 finite certificates and runs eight negative controls without importing circuit constructors. The earlier manuscript-assembly record reports rerunning this entry point and checking archived manifests. The English revision changes language and typesetting only; it does not claim new circuit generation or a new run of the research experiments. Certificate replay is distinct from a newly generated complete-circuit experiment.
+
+Depths and gate counts in the tables come from recounting the specified sequences, and displayed upper bounds are rounded upward. Dense simulation is used only for items explicitly identified as full state-vector or full-matrix checks. Wider circuits use structural, support, or canonical-certificate checks. Sparse amplitude-interval propagation avoids enumerating $2^n$ states, but total verification also includes source-sequence and support-mapping checks; it is not a fast equivalence procedure for arbitrary quantum circuits.

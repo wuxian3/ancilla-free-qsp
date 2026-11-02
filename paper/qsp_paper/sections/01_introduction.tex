@@ -1,0 +1,27 @@
+\section{Introduction}
+Sparse state preparation encodes explicitly specified classical labels and complex amplitudes into a quantum superposition. It is a basic task for studying data-loading costs and the complexity of structured quantum circuits. Sparsity is measured relative to $2^n$, not to $n$: even when $d\gg n$, the target may occupy only a small fraction of the computational basis. A useful parameterized synthesis result should therefore extend beyond $d\le n$, while specifying both the workspace model and the elementary-gate accounting. We do not assume QRAM queries or free data loading; each circuit is synthesized for a complete classical description of its target.
+
+Existing work has substantially reduced gate counts. Li--Luo obtain an ancilla-free gate bound of $O(n+nd/\log n)$ and a counting lower bound that does not restrict the number of arbitrary rotations\cite{liluo2025}. Using weighted W states and partial reversible mappings, Vilmart--Ty--Mang give an exact construction with depth $O(n+d)$, gate count $O(d(n+d))$, and $\max\{0,d-n\}$ ancillas\cite{vilmart2026}. With additional ancillas, Luo--Li--Li establish further space--depth tradeoffs\cite{luo2025}. These results motivate a question distinct from gate-count minimization alone: can a single circuit attain lower depth while preserving the known gate-count order within the final output width?
+
+The manuscript develops three connected components. First, we construct a divisor-closed basis of Boolean evaluations in affine support coordinates. Borrowing future result locations and immediately cleaning them allows the nonlinear feature computation to fit on $d$ wires. Second, we reconstruct the output using workspace within the output register for small support, and use a shared pivot with batched reflections for superlinear support. The latter removes the requirement $d\le n$ imposed by a single global one-hot encoding. Third, we distinguish mathematically exact rotations from finite-precision execution and provide an error-certification chain from a source gate sequence to its approximation and then to the original target input.
+
+The attribution of these contributions is deliberately limited. Standard monomials, affine compression, W states, low-depth CNOT synthesis, multicontrolled gates, Fourier addition, the Householder identity, and interval arithmetic are established methods or elementary algebraic tools\cite{jiang2020,nie2024,malvetti2021,draper2000,johansson2016}. The construction to be reviewed is their specific computation-and-uncomputation schedule under a restricted wire budget, together with the simultaneous resource bounds. We do not present the known gate-count order, a local minimum Toffoli count, or a scheduling obstruction for one fixed baseline sequence as an exclusive advantage for the full problem.
+
+\subsection{Related work under a common model}
+Table~\ref{tab:prior} lists the direct comparisons. For $d>n$, the same batching reduction can also be applied to a published small-support core: each batch contains at most $n$ terms and uses $O(n)$ depth and $O(n^2)$ gates, while $O(d/n)$ batches give an ancilla-free construction with $O(d)$ depth and $O(nd)$ gates. This row is our deduction from published components, not a theorem quoted verbatim from the baseline authors and not a lower bound on possible improvements to their method.
+\begin{table}[tb]
+\centering\small
+\caption{Resource upper bounds in the exact single-qubit-plus-CNOT model. Here $L(n)=\log_2(n+1)$. Ancillas are counted beyond the final $n$ output wires.}\label{tab:prior}
+\begin{tabularx}{\linewidth}{@{}Y >{\raggedright\arraybackslash}p{22mm} >{\raggedright\arraybackslash}p{34mm} >{\raggedright\arraybackslash}p{35mm}@{}}
+\toprule
+Construction & Extra ancillas & Depth & Gate count\\
+\midrule
+Li--Luo\cite{liluo2025} & $0$ & Not determined by the cited size theorem alone & $O(n+nd/\log n)$\\
+Vilmart et al.\cite{vilmart2026} & $\max(0,d-n)$ & $O(n+d)$ & $O(d(n+d))$\\
+Same batching applied to that core ($d>n$) & $0$ & $O(d)$ & $O(nd)$\\
+Present construction & $0$ & $O(L(n)+d/L(n))$ & $O(n+nd/L(n))$\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The potential theoretical distinction is a simultaneous depth and gate-count guarantee in the same workspace model, not an exclusive ability to handle $d>n$. Independent novelty assessment must still examine direct substitutions into existing theorems, standard reductions, and equivalent reanalyses. We make no historical-priority claim.

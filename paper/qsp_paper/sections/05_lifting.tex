@@ -1,0 +1,81 @@
+\section{Batched Reflections and Superlinear Support}\label{sec:lifting}
+Encoding all $d$ support points into one-hot form at once requires at least $d$ wires, but this is not a limitation of state preparation itself. This section uses only the small-support envelope of Corollary~\ref{cor:envelope} to turn each local preparation into an operator that acts identically outside its batch.
+
+\begin{lemma}[A full-space reflection from a preparation circuit]\label{lem:householder}
+If a fixed legal unitary circuit $U_v$ satisfies $U_v\ket{0^n}=e^{i\phi}\ket v$, then
+\begin{equation}\label{eq:householder}
+U_v\Rzero U_v^\dagger=I-2\ket v\bra v=:H_v.
+\end{equation}
+The choice of unitary extension of $U_v$ on the orthogonal complement of $\ket{0^n}$ does not affect the identity. If $x\notin\supp(v)$, then $H_v\ket x=\ket x$.
+\end{lemma}
+\begin{proof}
+Expand $U_v(I-2\ket0\bra0)U_v^\dagger$. The global phase cancels in the projector, and coordinates outside the batch are orthogonal to $v$.
+\end{proof}
+Equation~\eqref{eq:householder} is the standard Householder implementation identity\cite{malvetti2021}. Its chronological order is $U_v^\dagger;\Rzero;U_v$. The clean-workspace promises used when constructing $U_v$ need not be re-established before every call to $U_v^\dagger$: the operation being used is an already fixed, full-space unitary circuit and its inverse.
+
+\begin{lemma}[Lifting a bounded-support core]\label{lem:batching}
+Fix $2\le b\le n$. Suppose every vector with at most $b$ nonzero terms has an $n$-wire preparation circuit with resource bounds $D_c(n,b),G_c(n,b)$. Then every target with $d>b$ nonzero terms can be prepared using
+\begin{equation}\label{eq:q}
+q=\ceil{\frac{d-1}{b-1}}
+\end{equation}
+reflections, with
+\begin{align}
+D&\le O(1)+q\bigl(2D_c(n,b)+D(\Rzero)\bigr),\label{eq:batchdepth}\\
+G&\le O(n)+q\bigl(2G_c(n,b)+G(\Rzero)\bigr).\label{eq:batchsize}
+\end{align}
+No wire beyond the final output register is added.
+\end{lemma}
+\begin{proof}
+Choose a nonzero pivot label $p$ and partition the other $d-1$ terms into batches of at most $b-1$ terms. In the elimination direction, a step has the local component
+\[
+w=a\ket p+\sum_{i\in B_j}\alpha_i\ket{x_i},\qquad
+\beta=\norm w,\quad\tau=a/|a|,\quad\gamma=-\tau\beta.
+\]
+Define
+\begin{equation}\label{eq:complexv}
+v=\frac{w-\gamma\ket p}{\sqrt{2\beta(\beta+|a|)}}.
+\end{equation}
+Since $a\ne0$, the denominator is positive. Direct calculation gives
+\[
+\norm{w-\gamma p}^2=2\beta(\beta+|a|),\qquad
+\braket{w-\gamma p}{w}=\beta(\beta+|a|),
+\]
+so $\norm v=1$ and $H_vw=\gamma\ket p$. The reflection vector has at most $b$ terms, allowing use of the local preparation circuit. The operation is the identity outside the batch, so previously eliminated amplitudes do not reappear. The pivot magnitude increases and remains nonzero. After $q$ steps,
+\[
+H_{v_q}\cdots H_{v_1}\ket\psi=e^{i\eta}\ket p.
+\]
+Prepare the pivot and apply these self-adjoint reflections in reverse order. Initialization uses at most $O(n)$ gates and $O(1)$ depth; a specified global phase can be set with a constant number of single-qubit gates. Every execution is charged, even if its gate sequence is stored only once.
+\end{proof}
+
+\begin{algorithm}[tb]
+\caption{Batched Householder preparation with a shared pivot}\label{alg:batching}
+\begin{algorithmic}[1]
+\Require Labels $x_i$, complex amplitudes $\alpha_i$, and batch width $2\le b\le n$
+\Ensure An $n$-wire circuit preparing the target
+\State Choose a nonzero pivot $p$; partition the other labels into $B_1,\ldots,B_q$, each of size at most $b-1$
+\State $a\gets\alpha_p$
+\For{$j=1,\ldots,q$}
+\State $w_j\gets a\ket p+\sum_{i\in B_j}\alpha_i\ket{x_i}$
+\State $\beta_j\gets\norm{w_j}$; $\gamma_j\gets-(a/|a|)\beta_j$
+\State Form $v_j$ using~\eqref{eq:complexv}; synthesize $U_{v_j}$
+\State $a\gets\gamma_j$
+\EndFor
+\State Initialize $a\ket p$ (at this point $|a|=1$)
+\For{$j=q,q-1,\ldots,1$}
+\State Append $U_{v_j}^{\dagger};\Rzero;U_{v_j}$ in chronological order
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{proof}[Completion of the upper bound in Theorem~\ref{thm:main}]
+Proposition~\ref{prop:small} covers $d\le n$. For $d>n$, take $b=n$ and apply Corollary~\ref{cor:envelope} and Established result~\ref{fact:r0}. Since $q\le3d/n$,
+\begin{align}
+D&=O\left(\frac d{L(n)}+\frac{dL(n)^2}{n}\right)
+ =O\left(\frac d{L(n)}\right),\\
+G&=O\left(n+\frac{nd}{L(n)}+d\right)
+ =O\left(\frac{nd}{L(n)}\right).
+\end{align}
+The simplifications use the uniform boundedness of $L(n)^3/n$ over integers $n\ge2$ and the condition $d>n$. This proves the uniform upper bounds for all $2\le d\le2^n$.
+\end{proof}
+
+The implemented reflection prototype has depth $O(L(n)^3)$ and $O(n)$ gates, weaker than the published theorem used in the main proof. Substitution adds $O(dL(n)^3/n)$, which is still absorbed because $L(n)^4/n$ is bounded. This is an asymptotic statement; it does not make the finite-width reflection constants negligible. Appendix~\ref{app:reflection} describes implementation alternatives and their resource guard.

@@ -1,0 +1,72 @@
+% English-only, pdfLaTeX-compatible preamble. No CJK or system-font dependency.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage[left=25mm,right=25mm,top=24mm,bottom=25mm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools,bm}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage{graphicx}
+\usepackage{algorithm,algpseudocode}
+\floatname{algorithm}{Algorithm}
+\algrenewcommand\algorithmicrequire{\textbf{Input:}}
+\algrenewcommand\algorithmicensure{\textbf{Output:}}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=2em}
+\usepackage{microtype}
+\usepackage{xurl}
+\usepackage[hidelinks,unicode]{hyperref}
+\usepackage{bookmark}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=numeric-comp,sorting=none,maxbibnames=99,giveninits=true,isbn=false,url=true,doi=true]{biblatex}
+\addbibresource{qsp_paper/references.bib}
+\hypersetup{pdftitle={Ancilla-Free Sparse Quantum State Preparation: Simultaneous Depth and Gate-Count Bounds with Error Certification},pdfauthor={},pdflang={en-US}}
+\newtheoremstyle{qspplain}{7pt}{7pt}{\normalfont}{}{\bfseries}{.}{0.5em}{}
+\theoremstyle{qspplain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{fact}[theorem]{Established result}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\renewcommand{\proofname}{Proof}
+\numberwithin{equation}{section}
+\newcommand{\F}{\mathbb F_2}
+\newcommand{\C}{\mathbb C}
+\newcommand{\N}{\mathbb N}
+\newcommand{\GL}{\operatorname{GL}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\ev}{\operatorname{ev}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\Cov}{\operatorname{Cov}}
+\newcommand{\E}{\mathbb E}
+\newcommand{\ket}[1]{\lvert #1\rangle}
+\newcommand{\bra}[1]{\langle #1\rvert}
+\newcommand{\braket}[2]{\langle #1\mid #2\rangle}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\abs}[1]{\left\lvert #1\right\rvert}
+\newcommand{\ceil}[1]{\left\lceil #1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1\right\rfloor}
+\newcommand{\Rzero}{R_0}
+\newcommand{\poly}{\operatorname{poly}}
+\newcommand{\CX}{\mathrm{CX}}
+\newcommand{\CCX}{\mathrm{CCX}}
+\newcommand{\Ry}{\mathrm{R}_y}
+\newcommand{\Ph}{\mathrm{P}}
+\newcommand{\Lfun}[1]{L(#1)}
+\DeclareMathOperator{\tr}{tr}
+\setlength{\parindent}{1.3em}
+\setlength{\parskip}{0.15em}
+\setlength{\emergencystretch}{2.5em}
+\linespread{1.05}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\renewcommand{\arraystretch}{1.18}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\draftstatus}{\noindent\textit{Research-draft status. This manuscript consolidates archived AI-assisted research. It has not undergone external peer review or machine formalization, and historical priority has not been established. Finite numerical checks are distinguished from mathematical arguments for arbitrary input size.}}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\raggedbottom

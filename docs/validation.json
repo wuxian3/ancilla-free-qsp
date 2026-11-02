@@ -1,0 +1,143 @@
+{
+  "checked_on": "2026-11-02",
+  "lean_version": "4.24.0",
+  "mathlib_revision": "f897ebcf72cd16f89ab4577d0c826cd14afaafc7",
+  "lean_build": "passed",
+  "theorem_count": 21,
+  "axiom_audit": {
+    "allowed_axioms": [
+      "Classical.choice",
+      "Quot.sound",
+      "propext"
+    ],
+    "theorems": {
+      "QSP.target_error_bound": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.accepted_target_error": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.compilation_ledger": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.compute_inverse": [
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.dirty_workspace_echo": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.dirty_workspace_reference": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.reflection_fixes_orthogonal": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.reflection_negates_axis": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.reflection_involutive": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.reflection_phase_invariant": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.reflection_conjugation": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.prepared_reflection": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.powerset_subset_basis": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.monomial_degree_bound": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.full_batch_progress": [
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.batch_workspace_fits": [
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.nonfull_batch_exhausts": [
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.contraction_product": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.product_error": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.inverse_error": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ],
+      "QSP.conjugation_error": [
+        "Classical.choice",
+        "Quot.sound",
+        "propext"
+      ]
+    }
+  },
+  "source_sha256": {
+    "QSP.lean": "edea090d2e3d9bc1e67d85ef94243070383dcab057c7859f2d6e69ea7d4c0a33",
+    "QSP/Certification.lean": "e85106e47def66a146e54f90adc2a9dc1e018e91bacc70bb2c56ed7e94bea9a2",
+    "QSP/DirtyWorkspace.lean": "bdabb3628ef1df386b13f19d10e544080ae11f99993d4687de1c54e662061738",
+    "QSP/Householder.lean": "463f65f01c7289c7841da47480ad561484c87acc9e6ed128b1720ac05af054a3",
+    "QSP/Monomials.lean": "ecb2d45cd946c19926451da1da5de545599afdcf481c3c463014dabe674b4370",
+    "QSP/OperatorError.lean": "ff55e556a2e57227d520956f192055fd2b0e7416f5795ea2b42a9dcc051baaf9",
+    "lean-toolchain": "42779d67b81608af8a12aa4328d2ab47ca201925b3b2bd68369587b5340bb434",
+    "lakefile.toml": "2837f5bb4de2bf4aa1c32e73c15581b654ba5a469df21f170ec3d867e5d36965",
+    "lake-manifest.json": "d87e3e5d1f87d3d6183d811884d5ad476648da36c11c6caa9a7382cc93a4e57e"
+  },
+  "manuscript": {
+    "main": "paper/qsp_paper.tex",
+    "engine": "Tectonic 0.17.0",
+    "bibliography_engine": "Biber 2.17",
+    "pages": 23,
+    "pdf_sha256": "787026fc606b5a22eb7a87f6b89d50e7aa22356b869b64edad1a207454d0a428",
+    "visual_checks": {
+      "pages": 23,
+      "replacement_characters": 0,
+      "unresolved_references": 0,
+      "out_of_page_text": []
+    }
+  },
+  "historical_experiments_replayed": false,
+  "full_main_theorem_formalized": false
+}

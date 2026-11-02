@@ -1,0 +1,65 @@
+\section{Exact Reflection Alternatives and Resource Protection}\label{app:reflection}
+This appendix describes a simpler implementation candidate. It does not replace the published ancilla-free multicontrolled-gate theorem imported by the main proof. Fourier addition and parity-phase representations have established precedents\cite{draper2000,welch2014}.
+
+\subsection{Fourier increment and a phase difference}
+Let $m=n-1$ and $N=2^m$. Use little-endian ordering and the positive-sign Fourier transform
+\[
+F_m\ket x=\frac1{\sqrt N}\sum_{y=0}^{N-1}e^{2\pi ixy/N}\ket y.
+\]
+The diagonal map $D\ket y=e^{2\pi iy/N}\ket y$ satisfies $DF_m\ket x=F_m\ket{x+1\bmod N}$. Hence $A=F_m^\dagger DF_m$ is increment modulo $N$, with chronological order $F_m;D;F_m^\dagger$.
+
+Let the final wire be $c$, set $\theta=\pi/N$, and define $B_\theta\ket{x,c}=e^{i\theta cx}\ket{x,c}$. Apply, in chronological order,
+\[
+A;B_\theta;A^\dagger;B_{-\theta};\Ph_c(-\theta).
+\]
+The data register is restored and the phase is
+\[
+\exp\bigl(i\theta c[(x+1\bmod N)-x-1]\bigr).
+\]
+It is $-1$ only for $c=1,x=N-1$, and is one otherwise. Prepending and appending $X^{\otimes n}$ yields the exact $R_0$, not merely equality up to a global phase. The final control-wire phase is essential; omitting it leaves an unwanted phase throughout the $c=1$ branch.
+
+A controlled phase in the standard QFT is decomposed into three P gates and two CNOTs using $2ab=a+b-(a\oplus b)$. Bit-order reversal uses physical SWAPs. The explicit gate count of an $m$-wire QFT is
+\[
+G(F_m)=m+5\binom m2+3\floor{m/2}.
+\]
+Shared-control phases cannot be treated as a single layer. Let $T:(c,x)\mapsto(c,x+c\mathbf1)$ be the arbitrary-target broadcast of Lemma~\ref{lem:fanout}, write $x=\sum_j2^jx_j$, and set $q_j=2^j/N$. The chronological sequence
+\[
+\prod_j\Ph_{x_j}(\pi q_j/2);T;
+\prod_j\Ph_{x_j}(-\pi q_j/2);T;
+\Ph_c\left(\frac\pi2\sum_jq_j\right)
+\]
+implements $B_\theta$ exactly with $6m-1$ elementary gates and $O(\log(m+1))$ depth. The complete Fourier reflection therefore has gate count
+\begin{equation}\label{eq:fouriergates}
+G_F(n)=10m^2+10m+12\floor{m/2}+1,\qquad m=n-1.
+\end{equation}
+Used alone, it has $\Theta(n^2)$ gates and cannot replace a linear-gate-count backend at arbitrary width. The case $n=1$ uses X, $\Ph(\pi)$, X.
+
+\subsection{Joint resource selection and asymptotic protection}
+Reschedule each candidate to the earliest legal layers while preserving every wire's predecessor order. This swaps only disjoint-wire operations, so the unitary is unchanged, the gate count is unchanged, and depth cannot increase. Using the rescheduled prototype reflection with resources $(D_A,G_A)$ as reference, admit only candidates satisfying
+\[
+D_i\le D_A,\qquad G_i\le G_A.
+\]
+Break ties by depth, gate count, and name. The reference itself is always feasible, so the selected circuit obeys the pointwise bounds
+\[
+D_*\le D_A\le D_0,\qquad G_*\le G_A=G_0.
+\]
+If the reference has $O(L(n)^3)$ depth and $O(n)$ gates, the selected circuit inherits those orders. A third candidate uses a Gray-ordered parity-phase expansion, but only at the fixed widths $n\le8$; its exponential-expansion cutoff does not grow with the input. The all-size guarantee comes from pointwise constraints, not an empirical switching threshold.
+
+When the reflection is executed $q$ times and every other component is unchanged, the actual resource changes are exactly
+\[
+D_{\rm new}=D_{\rm old}+q(D_*-D_0),\qquad
+G_{\rm new}=G_{\rm old}+q(G_*-G_0).
+\]
+Storing a reflection sequence once is file deduplication, not a reduction in execution count. Generating every candidate before selection adds classical compilation cost; no claim of fastest compilation is made.
+
+\subsection{Published theorems and the implemented backends}
+The main proof uses the published reflection theorem with depth $O(L(n)^2)$. The frozen prototype instead uses a variant based on conditionally clean wires, dirty control copies, parallel increment, and recursive phase differences, with depth $O(L(n)^3)$. Its increment satisfies
+\[
+\begin{aligned}
+D_I(k)&\le D_I(k-\floor{k/8})+O(\log^2(k+1)),\\
+G_I(k)&\le G_I(k-\floor{k/8})+O(k),
+\end{aligned}
+\]
+with small $k$ handled separately, giving $D_I=O(\log^3(k+1))$ and $G_I=O(k)$. Conditionally clean workspace and the phase method have prior precedent\cite{nie2024}. A complete proof of the implemented templates is retained in the research archive; the main existence proof does not substitute that prototype for the published theorem.
+
+The linear backend chooses intermediate matrices by exact conditional expectation. Its potential is $\Phi=\sum_e2^{X_e-\Delta}$. The initial expectation is less than one; fixing each symbol to a value that does not increase the conditional expectation prevents any final occupancy from reaching the threshold. This derandomization is also part of the established CNOT-synthesis background\cite{jiang2020}. The implementation uses slower exact rational arithmetic and claims neither the published algorithm's fastest classical complexity nor a new general CNOT theorem.

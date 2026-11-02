@@ -1,0 +1,93 @@
+\section{Finite Precision and Target-State Error Certification}\label{sec:error}
+Exact-rotation theory, finite angle specifications, and fault-tolerant gate sets are three different levels of description. We retain the single-qubit-rotation-plus-CNOT model and certify the target error of a generated finite gate sequence. We do not claim new approximation optimality or a Clifford+$T$ cost theorem.
+
+\subsection{Error metrics and exactly paired inverse circuits}
+Operator error is measured in spectral norm without disregarding global phase; state error is measured in the vector two-norm. For phase and $Y$-rotation gates,
+\begin{align}
+\norm{\Ph(\theta)-\Ph(\varphi)}
+ &=2\left|\sin\frac{\theta-\varphi}{2}\right|\le|\theta-\varphi|,\\
+\norm{\Ry(\theta)-\Ry(\varphi)}
+ &=2\left|\sin\frac{\theta-\varphi}{4}\right|\le\tfrac12|\theta-\varphi|.
+\end{align}
+Telescoping a product of unitaries gives
+\begin{equation}\label{eq:telescoping}
+\norm{U_K\cdots U_1-V_K\cdots V_1}\le\sum_{j=1}^K\norm{U_j-V_j}.
+\end{equation}
+Errors must be charged for every execution. Repeated use of one stored gate sequence cannot be counted once, nor can coherent accumulation be replaced by a square-root rule without the necessary independence assumptions.
+
+\begin{lemma}[Error of rank-one reflections]\label{lem:rankone}
+For normalized vectors $v,w$,
+\begin{equation}\label{eq:rankone}
+\norm{H_v-H_w}=2\sqrt{1-|\braket v w|^2}
+\le2\min_\phi\norm{w-e^{i\phi}v}.
+\end{equation}
+If $\widetilde U\ket0=w$, $\norm{\widetilde R_0-R_0}\le\rho$, and the exact inverse of that same $\widetilde U$ is used, then the error of one block is at most $2\delta+\rho$, where $\delta=\min_\phi\norm{w-e^{i\phi}v}$.
+\end{lemma}
+\begin{proof}
+Write $w=av+bz$ with $z\perp v$. The difference of the two rank-one projectors is supported on $\operatorname{span}(v,z)$ and has eigenvalues $\pm|b|$, so the reflection difference has norm $2|b|$. Since $\delta^2=2-2|a|$, the inequality follows. Unitary conjugation preserves spectral norm; apply the triangle inequality to the error in $\widetilde R_0$.
+\end{proof}
+If forward and backward circuits are approximated independently and cease to be mutual inverses, the forward zero-input error alone does not justify the lemma. The adapter therefore approximates the forward sequence first and constructs its exact inverse. An approximate zero-state reflection itself need not be self-adjoint or square to the identity; reversing it likewise requires the actual inverse sequence.
+
+\subsection{Truncated reflections and the compilation-error ledger}
+Let $m=n-1$. In the Fourier reflection, remove terms beyond phase scale $k$, where $1\le k\le m$. Charging all four QFTs, both increment-diagonal phases, both controlled-phase groups, and the final phase correction gives
+\begin{equation}\label{eq:aqft}
+\norm{\widetilde R_0-R_0}
+\le\pi(4s_F+2s_D+2s_B+s_C)
+\le\pi(4m+5)2^{-k},
+\end{equation}
+where
+\begin{align*}
+s_F&=\sum_{t=k+1}^{m-1}(m-t)2^{-t},&
+s_D&=\sum_{t=k+1}^{m-1}2^{-t},\\
+s_B&=\sum_{t=k+1}^{m}2^{-t},&
+s_C&=\mathbf1_{m>k}2^{-m}.
+\end{align*}
+Empty sums are zero, and $k=m$ recovers the exact reflection. The controlled-phase decomposition must recompute the control-wire phase from the retained coefficients; deleting only leaf phases is not sufficient. Truncated QFTs are established tools\cite{coppersmith2002}; equation~\eqref{eq:aqft} combines the component errors for this particular reflection structure. Its gate count is $O(n\min(n,k))$, so it cannot unconditionally replace the linear-gate-count exact reflection.
+
+For a general gate sequence, round non-fixed P and $\Ry$ angles to $\pi z/2^b$, keeping exact T, $T^\dagger$, H, X, and CNOT gates unchanged. If $K$ rotations require approximation, $b=O(\log(K/\eta))$ suffices for total error $\eta$. Exact rational multiples of $\pi$ are rounded with integer arithmetic. A finite floating-point radian value is instead interpreted as its exact binary rational value, and a rational enclosure of $\pi$ is used to bound the error. The exact period of P is $2\pi$, whereas that of $\Ry$ is $4\pi$; $\Ry(2\pi)=-I$ cannot be deleted as an identity.
+
+\begin{proposition}[Error of the complete compiled circuit]\label{prop:compileerror}
+Let $C$ be the source circuit. Suppose initialization has approximation error $\eta_{\rm init}$, forward preparation circuit $j$ has operator error $\eta_j$, its backward call is the exact inverse of the approximate forward sequence, and each zero-state reflection has error $\rho$. If $q$ reflections are executed, then
+\begin{equation}\label{eq:compilebound}
+\norm{\widetilde C-C}\le
+E_{\rm compile}:=\eta_{\rm init}+2\sum_{j=1}^q\eta_j+q\rho.
+\end{equation}
+\end{proposition}
+\begin{proof}
+Apply unitary invariance of spectral norm and the triangle inequality within each conjugation block, then combine blocks with~\eqref{eq:telescoping}. Every forward and backward preparation appears once, and the reflection is executed $q$ times.
+\end{proof}
+A conservative allocation is $\eta_{\rm init}\le\varepsilon/4$, $\eta_j\le\varepsilon/(8q)$, and $\rho\le\varepsilon/(2q)$. Candidate sequences are accepted only when their error, depth, and gate count all satisfy the constraints. Sufficiently fine rounding of the exact reference provides a feasible candidate, although the implemented precision range is finite.
+
+The number of non-fixed rotations in the original construction can be bounded by $O(d)$. Thus, under ideal unit-cost rotation accounting, there exists an approximate version using $O(\log((d+1)/\varepsilon))$ bits in the power-of-two angle denominator while preserving the original upper bounds. This existence statement assumes sufficiently accurate calculation of the ideal angles. It does not guarantee success of the current double-precision frontend for every $\varepsilon>0$, and it is not a synthesis of those rotations into Clifford+$T$ strings\cite{ross2014}.
+
+\subsection{A posteriori certification against an explicit target}
+Because the compiler first computes floating-point angles, equation~\eqref{eq:compilebound} alone does not establish target accuracy. To avoid trusting that preprocessing again, take explicitly specified complex rational inputs $a_i=u_i+iv_i$ and independently define
+\begin{equation}\label{eq:rationaltarget}
+\ket{\psi(a)}=\frac{\sum_i a_i\ket{x_i}}{\sqrt{\sum_i|a_i|^2}},
+\end{equation}
+using the positive real square root. Decimal strings and binary floating-point numbers have different exact rational interpretations; the input format must fix which is intended. Certification cannot recover precision lost before the file was written.
+
+Actual source rotations have two meanings: an angle tagged as a rational multiple of $\pi$ denotes that exact number, while any other finite floating-point radian angle denotes its exact binary rational value. The verifier recognizes the complete splitting template~\eqref{eq:wsplit}, requires the two angles to be exact negatives, and checks the phase gates and every specified support mapping of the NCT decoder. It can then recover a mathematically normalized local vector $w_j$ from the actual angles without assuming that floating-point generation produced the ideal $v_j$.
+
+In the preparation direction, every new batch initially has zero non-pivot coordinates. If its current pivot amplitude is $z$ and its actual reflection vector is $(w_0,w_1,\ldots)$, then
+\begin{equation}\label{eq:sparseprop}
+z'=(1-2|w_0|^2)z,\qquad
+z_i'=-2w_i\overline{w_0}z\quad(i>0).
+\end{equation}
+Earlier batches are unchanged. Outward interval evaluation of these identities encloses the source output without constructing a full $2^n$-dimensional state vector. Amplitude propagation requires $O(\sum_js_j)=O(d)$ arithmetic operations; NCT support checks, binding to the gate sequence, and certificate reading are additional costs.
+
+\begin{theorem}[A posteriori acceptance for target error]\label{thm:certification}
+Suppose the structural checks pass, the interval arithmetic encloses values correctly, and evaluation of the actual source circuit establishes
+\[
+\norm{C\ket{0^n}-\ket{\psi(a)}}_2\le B.
+\]
+If the compilation verifier establishes~\eqref{eq:compilebound}, then
+\begin{equation}\label{eq:targetbound}
+\boxed{\norm{\widetilde C\ket{0^n}-\ket{\psi(a)}}_2\le B+E_{\rm compile}.}
+\end{equation}
+Accept only after checking $B+E_{\rm compile}\le\varepsilon_{\rm total}$ with exact rational arithmetic. The corresponding pure-state trace distance is also no greater than this bound.
+\end{theorem}
+\begin{proof}
+Insert the source output $C\ket{0^n}$ and apply the triangle inequality. The operator norm controls the vector error on the zero input. Pure-state trace distance is at most the phase-optimized vector distance, and hence at most the phase-sensitive bound used here.
+\end{proof}
+The theorem guarantees accepted finite instances; it is not a theorem about the generator's success probability or termination at arbitrary precision. If the source angles already miss the target, increasing interval precision reduces enclosure slack but cannot repair the circuit. Nor can the source output's sparsity be imposed on the approximate output: leakage outside the support is covered by the spectral-norm compilation bound. Appendix~\ref{app:intervals} details the interval kernel and strict structural checks.

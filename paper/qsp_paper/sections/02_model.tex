@@ -1,0 +1,55 @@
+\section{Model and Main Results}\label{sec:model}
+The input consists of distinct labels $x_0,\ldots,x_{d-1}\in\F^n$ and nonzero complex amplitudes $\alpha_i$ satisfying $\sum_i|\alpha_i|^2=1$. The goal is to prepare
+\begin{equation}\label{eq:target}
+\ket\psi=\sum_{i=0}^{d-1}\alpha_i\ket{x_i}
+\end{equation}
+from $\ket{0^n}$. Each single-qubit unitary and each CNOT counts as one elementary gate. Gates in the same layer must have disjoint wire sets, including their controls. Toffoli gates, SWAPs, broadcasts, and multicontrolled phases must be decomposed and charged. The circuit has exactly the $n$ output wires retained at the end; no additional register, measurement, postselection, or free wire relabeling is permitted.
+
+Temporarily using an output wire is different from adding an ancilla, but still requires a proof of the relevant input promise and restoration time. A wire that is zero on a specified subspace is called \emph{conditionally clean workspace}. A wire with arbitrary, possibly entangled initial contents that must be restored is called \emph{dirty workspace}. Copying computational-basis values creates coherent correlations; it does not clone an arbitrary unknown quantum state.
+
+Write $L(t)=\log_2(t+1)$, and let $\mathcal S_{n,d}$ denote the normalized states with exactly $d$ nonzero terms. Let $\mathcal U(\psi)$ be the legal circuits satisfying $U\ket{0^n}=e^{i\phi}\ket\psi$. Define
+\begin{equation}
+\begin{aligned}
+D^*(n,d)&=\sup_{\psi\in\mathcal S_{n,d}}\min_{U\in\mathcal U(\psi)}D(U),\\
+G^*(n,d)&=\sup_{\psi\in\mathcal S_{n,d}}\min_{U\in\mathcal U(\psi)}G(U).
+\end{aligned}
+\end{equation}
+The exact-complexity model disregards global phase. The certification interface in Section~\ref{sec:error} retains the phase of the explicitly specified input and uses the stronger, phase-sensitive vector distance.
+
+\begin{theorem}[Uniform upper bounds and fixed polynomial windows]\label{thm:main}
+There are constants $A_D,A_G$, independent of $n$ and $d$, such that, for every $n\ge2$, every $2\le d\le2^n$, and every target in~\eqref{eq:target}, a single legal circuit $U$ satisfies
+\begin{equation}\label{eq:mainupper}
+D(U)\le A_D\left(L(n)+\frac d{L(n)}\right),\qquad
+G(U)\le A_G\left(n+\frac{nd}{L(n)}\right).
+\end{equation}
+For each fixed $c\ge1$, throughout $2\le d\le\min\{n^c,2^n\}$,
+\begin{equation}\label{eq:mainlower}
+\begin{aligned}
+D^*(n,d)&=\Theta_c\left(L(n)+\frac d{L(n)}\right),\\
+G^*(n,d)&=\Theta_c\left(n+\frac{nd}{L(n)}\right).
+\end{aligned}
+\end{equation}
+The lower-bound constants may depend on the fixed $c$. The exponent $c$ may not grow with $n$, and this statement does not establish optimality for general exponential support sizes.
+\end{theorem}
+
+A ``single circuit'' means that, for each specified target, both resource bounds hold for the same circuit; it does not mean that one circuit prepares every target. The two worst-case lower bounds need not be witnessed by the same state. The case $d=1$ uses at most one layer of X gates, and $n=1$ uses one single-qubit gate. This is the theorem statement of the present research draft. Its proof consists of the lemmas below and the explicitly imported results, not of the finite tests.
+
+\subsection{Imported results}
+\begin{fact}[Ancilla-free linear synthesis]\label{fact:linear}
+Every invertible binary linear map on $k$ bits has a CNOT implementation on those same $k$ wires with depth $O(k/L(k))$\cite[Theorem~1.1]{jiang2020}. A layer contains at most $\floor{k/2}$ CNOT gates, so the same implementation has $O(k^2/L(k))$ gates.
+\end{fact}
+
+\begin{fact}[Sparse state preparation with clean ancillas]\label{fact:tradeoff}
+An $a$-qubit target with $d$ nonzero terms can be prepared exactly using $m\ge6a$ clean ancillas, all returned to zero, with\cite[Theorem~1]{luo2025}
+\begin{align}
+D&=O\left(\frac{ad\log m}{m\log(m/a)}+\log(ad)\right),\label{eq:tradeoffdepth}\\
+G&=O\left(\frac{ad}{\log(m/a)}+\frac{ad}{\log d}\right).\label{eq:tradeoffsize}
+\end{align}
+These ancillas are relative to the $a$-qubit logical task. The physical total must be counted again when this result is embedded in an $n$-qubit output register.
+\end{fact}
+
+\begin{fact}[Ancilla-free zero-state reflection]\label{fact:r0}
+The reflection $\Rzero=I-2\ket{0^n}\bra{0^n}$ has an exact implementation on $n$ wires with depth $O(L(n)^2)$ and $O(n)$ elementary gates. This follows by conjugating an ancilla-free multicontrolled X construction with H and X gates\cite[Theorem~6]{nie2024}. We use the zero-ancilla result, not the logarithmic-depth variant requiring one ancilla.
+\end{fact}
+
+Exact access to arbitrary continuous rotations is part of the gate model, not a promise of error-free synthesis over a finite discrete gate set. Finite angle descriptions and error certification are treated separately below and are not identified with Clifford+$T$ synthesis.

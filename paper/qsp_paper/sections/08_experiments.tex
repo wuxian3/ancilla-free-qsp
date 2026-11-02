@@ -1,0 +1,25 @@
+\section{Implementation, Numerical Evidence, and Reproducibility}\label{sec:experiments}
+The experiments serve three purposes: checking finite circuit semantics and resource accounting, separating implementation changes from scheduling improvements, and testing whether invalid certificates are rejected. The asymptotic bounds follow from the proofs above, not from fitting finite data. All resource comparisons use identical inputs within the same frozen prototype; they are not systematic benchmarks against the strongest external synthesis software.
+
+\subsection{Exact reflection backends on identical inputs}
+The prototype's asymptotic reflection backend has $O(L(n)^3)$ depth and $O(n)$ gates, but substantial finite constants. An alternative uses Fourier increment and a phase difference. At each width, a selector admits it only if neither depth nor gate count exceeds the reference. In Table~\ref{tab:exactresources}, only the reflection is replaced: the inputs, batches, local $U_v$ circuits, and their inverses are unchanged. Every row has a complete elementary-gate state-vector check.
+\input{qsp_paper/tables/exact_resources.tex}
+
+For $(n,d)=(16,32)$, merely rescheduling the old reflection to the earliest legal layers gives complete depth $31\,834$, whereas replacing the reflection gives $2\,116$. The difference is therefore not attributable to scheduling alone. The Fourier backend has quadratic gate count when used by itself and cannot unconditionally replace a linear-gate-count backend at every width. Appendix~\ref{app:reflection} gives the pointwise resource guarantee.
+
+\subsection{Error budgets and end-to-end target certificates}
+Table~\ref{tab:errorresources} reports four saved inputs with total target budget $0.01$. Here $B$ bounds the preprocessing residual, $B+E_{\rm compile}$ is the certified total bound, and the observed error is the vector two-norm distance to the target in complete elementary-gate simulation. Decimal upper bounds are rounded upward for display. Acceptance uses the original rational values, not the displayed approximations.
+\input{qsp_paper/tables/target_errors.tex}
+
+For $(16,32)$, the original exact schedule has $2\,116$ layers and $10\,477$ gates. Exact cancellation and rescheduling alone give $2\,078$ layers and $10\,477$ gates; finite-budget approximation gives $2\,078$ layers and $10\,438$ gates. Thus, the depth reduction in this example is due to exact scheduling, while approximation saves an additional 39 gates. The entire improvement must not be attributed to angle truncation.
+
+Structural evidence for wider reflections shows further gate savings at a per-call budget of $0.01$, which is not the same as imposing that budget on the entire circuit. For example, a 64-qubit reflection decreases from $40\,693$ to $18\,416$ gates with certified error at most $0.00882394$. That width was checked through canonical gate structure and analytical error bounds, not a 64-qubit dense simulation.
+
+\subsection{Validation coverage and negative controls}
+The final target-certification suite contains nine new exact inputs at two budgets each, giving 18 new circuits, plus four historical circuits recertified without changing their gate sequences. All 22 received full state-vector comparisons. The maximum width is 16; the maximum support size, 144, occurs in a 12-qubit input. These maxima are not combined into an unexecuted case. Six source circuits of at most four qubits were also evaluated gate by gate with 110 decimal digits as a diagnostic.
+
+The interval kernel has archived checks for 3\,600 rational operations, 450 square-root enclosures, 168 trigonometric diagnostics, and four precision settings for $\pi$. Fourteen certificate or structural attacks and ten invalid or unsupported requests were rejected. A separate process can replay 13 certificates and eight negative controls without importing circuit constructors. The tables are generated directly from the saved JSON results; experiment identifiers and input hashes are retained in the accompanying source records. Comparisons do not mix different targets, and inherited tests are not cumulatively recounted as new tests.
+
+One negative control adds a $0.02$-radian phase offset to a structurally legal source circuit. Compilation error relative to that biased source can be below $1.745\times10^{-5}$, while the source residual relative to the original target has a lower bound of approximately $0.0099998333$. The reverse triangle inequality still gives final target error greater than $0.009982$, so a budget of $0.001$ must be rejected. Faithful compilation of a source circuit and accurate preparation of the intended target are different statements.
+
+These checks strengthen confidence in finite instances but are not external peer review or machine formalization. The constructor and verifier were implemented separately within the same research process. Software defects, unexamined equivalences to prior work, and omissions in proofs for arbitrary size remain subjects for independent review.

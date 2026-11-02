@@ -1,0 +1,28 @@
+% !TeX program = pdflatex
+% Main document: qsp_paper.tex. Compile with pdfLaTeX + Biber.
+\documentclass[11pt,a4paper]{article}
+\input{qsp_paper/preamble.tex}
+\title{Ancilla-Free Sparse Quantum State Preparation:\\Simultaneous Depth and Gate-Count Bounds\\with Error Certification}
+% Authors and affiliations are intentionally left for the manuscript owners.
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\vspace{-1.6em}
+\input{qsp_paper/sections/00_abstract.tex}
+\input{qsp_paper/sections/01_introduction.tex}
+\input{qsp_paper/sections/02_model.tex}
+\input{qsp_paper/sections/03_core.tex}
+\input{qsp_paper/sections/04_reconstruction.tex}
+\input{qsp_paper/sections/05_lifting.tex}
+\input{qsp_paper/sections/06_lower_bounds.tex}
+\input{qsp_paper/sections/07_error.tex}
+\input{qsp_paper/sections/08_experiments.tex}
+\input{qsp_paper/sections/09_conclusion.tex}
+\clearpage
+\appendix
+\input{qsp_paper/appendices/a_reflection.tex}
+\input{qsp_paper/appendices/b_intervals.tex}
+\input{qsp_paper/appendices/c_scope_and_reproducibility.tex}
+\printbibliography[heading=bibintoc,title={References}]
+\end{document}

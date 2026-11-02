@@ -1,0 +1,82 @@
+\section{A Nonlinear Feature Core Under a Width Constraint}\label{sec:core}
+We first consider $2\le d\le n$. A classical coordinate projection separates the geometry of the support from the quantum workspace requirement; a one-hot encoding is then constructed on $d$ wires.
+
+\begin{lemma}[Support-coordinate projection]\label{lem:projection}
+Let the $i$th column of $X\in\F^{n\times d}$ be $x_i+x_0$, and let $r=\rank X$. Select $r$ actual coordinate rows as a row basis $Y$. There is an $E\in\F^{n\times r}$ such that $X=EY$, and the rows of $E$ corresponding to the selected coordinates form $I_r$. The columns $y_i$ of $Y$ are distinct, include zero, and span $\F^r$, with
+\begin{equation}\label{eq:rankwindow}
+\ceil{\log_2d}\le r\le d-1.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Each original coordinate row has a unique representation in the selected row basis, which defines $E$. If $y_i=y_j$, then $Ey_i=Ey_j$, contradicting distinctness of the original support. The difference matrix contains a zero column, so its rank is at most $d-1$. There are at most $2^r$ distinct $r$-bit points, giving the other inequality. The row basis has rank $r$, so its columns span $\F^r$.
+\end{proof}
+This step computes classical matrices only; it does not execute a full $n$-bit Gaussian-elimination circuit. The temporary layout places the selected coordinates on the first $r$ wires, with the physical output permutation charged at the end.
+
+\subsection{A divisor-closed evaluation basis}
+\begin{lemma}[A low-degree monomial basis]\label{lem:monomial}
+For a $d$-point set $S$ that contains zero and spans $\F^r$, there is a set $\mathcal B$ of $d$ squarefree monomials whose evaluations on $S$ form a basis of $\F^d$. The set contains the constant and every degree-one monomial, is closed under taking divisors, and satisfies
+\begin{equation}
+\max_{f\in\mathcal B}\deg f\le\floor{\log_2d}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Fix a degree-compatible multiplicative monomial order, restrict it to squarefree monomials, and greedily retain evaluations that are linearly independent of those retained earlier. For every $p\in S$, the point indicator
+\[
+\delta_p(x)=\prod_{j:p_j=1}x_j\prod_{j:p_j=0}(1+x_j)
+\]
+expands into squarefree monomials. Their evaluations therefore span the function space $S\to\F$, and the procedure retains exactly $d$ monomials.
+
+Suppose $f=uv$ is retained but its divisor $u$ was rejected. Then $\ev(u)$ is a linear combination of earlier evaluations. After multiplication by $\ev(v)$, multiplicativity places the ordinary products before $uv$. Reducing repeated variables by $x_j^2=x_j$ either lowers the degree, leaving the term strictly earlier than $f$, or preserves the earlier monomial order. Consequently, $\ev(f)$ also lies in the span of earlier squarefree evaluations, a contradiction. Thus $\mathcal B$ is divisor-closed. A squarefree monomial of degree $t$ has $2^t$ divisors, so $2^t\le d$.
+
+The constant and the $r$ degree-one monomials are independent: evaluation at zero first eliminates the constant coefficient, and the spanning property of $S$ then eliminates the linear relation. Degree compatibility ensures that all of these monomials are retained.
+\end{proof}
+The algebraic properties of standard monomials are not claimed as a new algebraic theorem. An implementation need generate only single-variable extensions of accepted monomials. Divisor closure guarantees that every monomial that should be accepted is reachable, yielding at most $1+rd$ candidates rather than an enumeration of all $2^r$ monomials.
+
+\subsection{Borrowing future result locations}
+\begin{lemma}[Parallel feature computation on $d$ wires]\label{lem:recycling}
+There is a $d$-wire NCT circuit $F$ that evaluates all features in $\mathcal B$ on every zero-padded input $y\in\F^r$. It uses exactly $h=d-r-1$ Toffoli gates, $O(d)$ elementary gates, and $O(L(d)^2)$ elementary depth. At the beginning and end of every batch, all not-yet-computed feature locations are zero.
+\end{lemma}
+\begin{proof}
+Assign the $r$ coordinates, the constant, and the $h$ nonlinear monomials to the $d$ wires, setting the constant with one X gate. Split the variable set of each nonlinear monomial into two balanced, nonempty factors. Both factors belong to $\mathcal B$ and have strictly smaller level $\ceil{\log_2\deg f}$. There are $O(\log\log(d+1))$ dependency levels.
+
+Suppose $z$ feature locations remain uncomputed and $q$ products are ready at the current level. When $z\ge3$, choose
+\[
+b=\min\{q,\floor{z/3}\}.
+\]
+Use $b$ zero locations for the results and borrow another $2b$ future result locations. Explicit balanced CNOT trees produce the private copies needed for each factor; the wire sets of different sources and their copies are disjoint. Every product then has two private controls and a distinct target, so the $b$ Toffolis form one layer. Immediately reverse the copying trees to clear the borrowed locations. Completed features are unchanged: the products do not modify their copies, and the sources used for uncomputation have not changed. This invariant holds for every zero-padded $y$, not merely for the target support. When $z<3$, compute the final at most two products sequentially.
+
+A full batch computes at least $\floor{z/3}\ge z/5$ products and therefore decreases $z$ by a fixed fraction; a non-full batch exhausts the current dependency level. There are $O(L(d))$ batches in total, each with $O(L(d))$ copying-and-cleanup depth. Each copied product uses exactly four copying and cleanup CNOTs, and there are $h$ products overall. Exact constant-size Toffoli decompositions give the stated elementary gate count and depth.
+\end{proof}
+Borrowed locations may be nonzero within a batch. The lemma asserts a batch-boundary invariant, not that these locations remain zero throughout the computation.
+
+\subsection{One-hot encoding and weighted W states}
+\begin{lemma}[Small-width preparation of canonical support]\label{lem:core}
+For the projected labels $y_i$ of Lemma~\ref{lem:projection}, the state
+\[
+\sum_i\alpha_i\ket{y_i}\ket{0^{d-r}}
+\]
+can be prepared on $d$ wires with simultaneous depth $D=O(d/L(d))$ and gate count $G=O(d^2/L(d)+d)$.
+\end{lemma}
+\begin{proof}
+The $d$ support columns output by $F$ form an invertible evaluation matrix $T$. Set $B=T^{-1}$ and synthesize $B$ using Established result~\ref{fact:linear}. Then $BF\ket{y_i,0}=\ket{e_i}$.
+
+First prepare the weighted W state $\sum_i\alpha_i\ket{e_i}$. Use a balanced splitting tree with representative wires $a,b$ and the chronological gate sequence
+\begin{equation}\label{eq:wsplit}
+\CX_{b\to a};\Ry^{(b)}(\theta);\CX_{a\to b};\Ry^{(b)}(-\theta);
+\CX_{a\to b};\CX_{b\to a}.
+\end{equation}
+Under the convention $\Ry(\theta)=\exp(-i\theta Y/2)$, this sequence fixes $\ket{00}$ and maps $\ket{10}$ to $\cos\theta\ket{10}+\sin\theta\ket{01}$. Choose the angles from the subtree probability masses. Nodes at the same level have disjoint wire sets. One root X gate, $d-1$ splits, and a phase $\Ph(\arg\alpha_i)$ on each one-hot wire realize arbitrary complex amplitudes in $O(d)$ gates and $O(L(d))$ depth. This W-state framework has a direct precedent\cite{vilmart2026}.
+
+Next apply $B^{-1}$ and then $F^{-1}$. The linear part requires $O(d/L(d))$ depth and $O(d^2/L(d))$ gates. Since $L(d)^3/d$ is bounded over integers $d\ge2$, we have $L(d)^2=O(d/L(d))$, so the nonlinear depth is absorbed by the same envelope.
+\end{proof}
+
+\begin{corollary}[A tight-space envelope for arbitrary small support]\label{cor:envelope}
+Every normalized $n$-qubit vector $v$ with $2\le s\le n$ nonzero terms has an $n$-wire preparation circuit $U_v$ satisfying
+\begin{equation}\label{eq:envelope}
+U_v\ket{0^n}=\ket v,\qquad
+D(U_v)=O(n/L(n)),\qquad G(U_v)=O(n^2/L(n)).
+\end{equation}
+\end{corollary}
+\begin{proof}
+Translate one support point to zero and compute classically an invertible linear map $A$ that compresses the difference support into the first $r\le s-1$ coordinates. Use Lemma~\ref{lem:core} on the first $s$ wires to prepare the projected state, leaving all other wires zero; then apply the full $n$-wire map $A^{-1}$ and undo the translation. Established result~\ref{fact:linear} and $s\le n$ give the bounds. This coarser envelope does not require the finer output reconstruction of the next section.
+\end{proof}

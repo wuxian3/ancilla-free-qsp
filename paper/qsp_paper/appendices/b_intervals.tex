@@ -1,0 +1,32 @@
+\section{Interval Kernel and Structural Conditions for Target Certification}\label{app:intervals}
+\subsection{Exact input and source-gate semantics}
+Input complex numbers are explicitly specified by integers, decimal strings, or numerator--denominator pairs. Historical floating-point values must be converted to their exact binary rationals before normalization, rather than silently interpreted as intended decimal values. The certified target is~\eqref{eq:rationaltarget}, not a target recomputed and overwritten by the generator.
+
+An exact rational-$\pi$ tag takes precedence in the meaning of a source angle; otherwise the finite floating-point value denotes its exact rational number of radians. The verifier binds the target hash, source sequence, approximate sequence, batch coverage, paired inverse calls, and initialization phase. Angles in the W splitting template must be exact negatives. A numerical tolerance must not admit pairs that violate the normalization identity. The NCT encoder is checked gate by gate on all specified inputs for the one-hot mapping and must match the exact Toffoli expansion in the actual elementary-gate tail.
+
+\subsection{Outward enclosures with integer endpoints}
+Use a common scale $S=2^p$ and represent a real interval as $[l,u]/S$. Products and quotients round the extrema of endpoint expressions downward or upward as appropriate; division by an interval containing zero is rejected. Squaring uses sign-aware intervals, and square roots use integer square roots:
+\[
+\sqrt{[l,u]/S}\subseteq
+\bigl[\floor{\sqrt{lS}},\ceil{\sqrt{uS}}\bigr]/S.
+\]
+Scale the input exactly by the maximum absolute real or imaginary component so that at least one real component has magnitude one, then compute the positive normalization root. This accommodates very large or small common factors without requiring their direct floating-point representation.
+
+Enclose $\pi$ using Machin's identity
+\[
+\pi=16\arctan(1/5)-4\arctan(1/239)
+\]
+and the alternating-series next-term bound, increasing the number of terms with precision. For $|x|\le R\le8$, retain sine through $x^{2N+1}$ with remainder at most $R^{2N+3}/(2N+3)!$, and cosine through $x^{2N}$ with remainder at most $R^{2N+2}/(2N+2)!$. Round every polynomial operation outward, add the remainder interval, and intersect with the known range $[-1,1]$.
+
+Interval arithmetic is a mature numerical method\cite{johansson2016}. The implementation here is a separate, small integer kernel: it does not use Arb or claim to replace a general-purpose numerical library. The target verifier explicitly supports $80\le p\le512$ and trigonometric inputs in $[-8,8]$, rejecting other requests. The finite-angle adapter currently supports 3--120 rounding bits. The theoretical existence statement is not a success guarantee for every precision request made to these finite implementations.
+
+\subsection{Residual bounds and acceptance}
+Propagate complex rectangular enclosures $Z_i$ for the actual source output using~\eqref{eq:sparseprop}, and obtain normalized target enclosures $A_i$. For the real and imaginary intervals of $\Delta_i=Z_i-A_i$, let $M_{i,R},M_{i,I}$ be the largest endpoint absolute values. Then
+\[
+Q=\sum_i(M_{i,R}^2+M_{i,I}^2)
+\]
+is an exact rational upper bound on the squared residual. Rounding $\sqrt Q$ upward to a dyadic endpoint yields $B$ in Theorem~\ref{thm:certification}. Minimum distances from the intervals to zero similarly yield a lower bound, which can prove that an existing source circuit cannot meet a request.
+
+Recompute $E_{\rm compile}$ from~\eqref{eq:compilebound}. Add $B+E_{\rm compile}$ using exact rationals before comparing against the budget; displayed floating-point values are not used for acceptance. The spectral-norm compilation bound covers the whole Hilbert space beyond the source output. A vector-error bound from the source to one target is not relabeled as a full-space operator bound.
+
+The generator still produces angles through a double-precision frontend, and a posteriori certification permits failure or rejection. For a request such as $10^{-20}$, the source error may already be too large. Increasing verification precision tightens enclosures but does not change the gate sequence. If conversion to floating point underflows a nonzero component in an extreme mixed dynamic range, the request must also be rejected rather than dropping support or changing the target.
